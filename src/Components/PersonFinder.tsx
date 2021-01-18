@@ -41,12 +41,15 @@ const PersonFinder = () => {
   })
 
   useEffect(() => {
-    const results = searchData(search);
-    if (search !== "" && results.length === 0) {
-      dispatch({type: "NO_RESULTS"})
-    } else {
-      dispatch({type: "DISPLAY_RESULTS", payload: results})
-    }
+    const timer = setTimeout(() => {
+      const results = searchData(search);
+      if (search !== "" && results.length === 0) {
+        dispatch({type: "NO_RESULTS"})
+      } else {
+        dispatch({type: "DISPLAY_RESULTS", payload: results})
+      }
+    }, 500)
+    return () => clearTimeout(timer);
   }, [search])
 
   return (
