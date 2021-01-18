@@ -12,6 +12,7 @@ export interface Person {
 }
 
 interface State {
+  isLoading: boolean;
   noResults: boolean;
   data: Array<Person>;
 }
@@ -19,15 +20,19 @@ interface State {
 type Action =
 | {type: "DISPLAY_RESULTS", payload: Array<Person>}
 | {type: "NO_RESULTS"}
+| {type: "LOADING"}
 
 
 const personReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "DISPLAY_RESULTS": {
-      return {...state, noResults: false, data: action.payload}
+      return {...state, isLoading: false, noResults: false, data: action.payload}
     }
     case "NO_RESULTS": {
-      return {...state, noResults: true, data: []}
+      return {...state, isLoading: false, noResults: true, data: []}
+    }
+    case "LOADING": {
+      return {...state, isLoading: true, noResults: false}
     }
     default: throw new Error();
   }
@@ -36,13 +41,15 @@ const personReducer = (state: State, action: Action): State => {
 const PersonFinder = () => {
   const [search, setSearch] = useState("");
   const [state, dispatch] = useReducer(personReducer, {
+    isLoading: false,
     noResults: false,
     data: mockData
   })
 
   useEffect(() => {
+    dispatch({type: "LOADING"})
     const timer = setTimeout(() => {
-      const results = searchData(search);
+      const results: Array<Person> = searchData(search);
       if (search !== "" && results.length === 0) {
         dispatch({type: "NO_RESULTS"})
       } else {
@@ -55,7 +62,7 @@ const PersonFinder = () => {
   return (
     <>
       <div className="form-wrapper">
-        <form>
+        <form autoComplete="off">
           <label htmlFor= "search"></label>
           <input
             type="text"
@@ -67,6 +74,7 @@ const PersonFinder = () => {
         </form>
       </div>
       <div className="list-wrapper">
+        {state.isLoading && <div>Loading results...</div>}
         {state.noResults ? (
           <div>
             <p>No results. Please try another name.</p>

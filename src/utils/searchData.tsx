@@ -1,20 +1,11 @@
 import {mockData} from "../mockData";
+import {Person} from '../Components/PersonFinder';
 
-interface Person {
-  name: string;
-  email: string;
-  description: string;
-  avatar: string;
-}
-
-const searchData = (search: string) => {
-  if (search === "") return mockData;
-  const lowerCaseSearchTerm: string = search.toLowerCase();
-  return mockData.filter((person: Person) => {
-    if (person.name.toLowerCase() === lowerCaseSearchTerm) return true;
-    if (person.name.toLowerCase().includes(lowerCaseSearchTerm)) return true;
-    return false;
-  });
+function searchData(search: string): Array<Person> {
+  if (search === "")
+    return mockData;
+  return mockData.filter((person: Person) => person.name.toLowerCase().includes(search.toLowerCase())
+  );
 }
 
 export default searchData;
